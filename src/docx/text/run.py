@@ -248,12 +248,9 @@ class Run(StoryChild):
     def underline(self, value: bool | WD_UNDERLINE | None):
         self.font.underline = value
 
-    def add_chart(self, x, y, cx, cy, chart_part):
-        """
-        在当前运行对象中添加图表。
-        """
-        inline, chart = self.part.new_chart_inline(x, y, cx, cy, chart_part)
-        self._r.add_drawing(inline)  # 将图表内联对象添加到当前运行的绘图元素中
+    def add_chart(self, cx, cy, chart_part):
+        inline, chart = self.part.new_chart_inline(cx, cy, chart_part)
+        self._r.add_drawing(inline)
         return chart
 
 

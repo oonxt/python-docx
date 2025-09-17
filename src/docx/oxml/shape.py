@@ -119,22 +119,19 @@ class CT_Inline(BaseOxmlElement):
         )
 
     @classmethod
-    def new_chart_inline(cls, shape_id, rId, x, y, cx, cy):
+    def new_chart_inline(cls, shape_id, rId, cx, cy):
         """
         创建一个新的图表内联对象。
         """
-        inline = parse_xml(cls._chart_xml())  # 解析内联XML模板
-        inline.extent.cx = cx  # 设置宽度
-        inline.extent.cy = cy  # 设置高度
-        chart = CT_Chart.new(rId)  # 创建图表元素
-        inline.graphic.graphicData._insert_cChart(chart) # 将图表元素插入图形数据
+        inline = parse_xml(cls._chart_xml())
+        inline.extent.cx = cx
+        inline.extent.cy = cy
+        chart = CT_Chart.new(rId)
+        inline.graphic.graphicData._insert_cChart(chart)
         return inline
 
     @classmethod
     def _chart_xml(cls):
-        """
-        返回图表内联元素的XML字符串模板。
-        """
         return (
                 "<wp:inline %s>\n"
                 "  <wp:extent cx='0' cy='0'/>\n"
@@ -328,20 +325,14 @@ class CT_Transform2D(BaseOxmlElement):
         ext = self.get_or_add_ext()
         ext.cy = value
 
-# 定义CT_Chart类以处理图表元素
+
 class CT_Chart(BaseOxmlElement):
     @classmethod
     def new(cls, rId):
-        """
-        创建一个新的图表元素，关联给定的关系ID。
-        """
-        chart = parse_xml(cls._chart_xml(rId))  # 解析图表XML模板
-        chart.id = rId  # 设置关系ID
+        chart = parse_xml(cls._chart_xml(rId))
+        chart.id = rId
         return chart
 
     @classmethod
     def _chart_xml(cls, rId):
-        """
-        返回图表元素的XML字符串模板。
-        """
         return '<c:chart %s r:id="%s"/>\n' % (nsdecls("c", "r"), rId)

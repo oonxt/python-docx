@@ -114,7 +114,6 @@ class OpcPackage:
         containing a single replacement item, a '%d' to be used to insert the integer
         portion of the partname. Example: "/word/header%d.xml"
         """
-        tmpl = template.replace("/ppt", "/word")
         partnames = {part.partname for part in self.iter_parts()}
         for n in range(1, len(partnames) + 2):
             candidate_partname = template % n
