@@ -14,6 +14,7 @@ from docx.parts.story import StoryPart
 from docx.parts.styles import StylesPart
 from docx.shape import InlineShapes
 from docx.shared import lazyproperty
+from docx.oxml.shape import CT_GraphicalObjectData, CT_Inline
 
 if TYPE_CHECKING:
     from docx.comments import Comments
@@ -167,3 +168,18 @@ class DocumentPart(StoryPart):
             styles_part = StylesPart.default(package)
             self.relate_to(styles_part, RT.STYLES)
             return styles_part
+
+    def get_or_add_chart(self, chart_type, x, y, cx, cy, chart_part):
+        """
+        获取已存在的图表Part，或创建并添加新图表Part。
+        """
+        rId = self.relate_to(chart_part, RT.CHART)  # 建立与图表Part的关系
+        return rId, chart_part.chart  # 返回关系ID和图表对象
+
+    def new_chart_inline(self, chart_type, x, y, cx, cy, chart_part):
+        """
+        创建新的图表内联对象，并关联图表Part。
+        """
+        rId, chart = self.get_or_add_chart(chart_type, x, y, cx, cy, chart_part)
+        shape_id = self.next_id  # 获取下一个形状ID
+        return CT_Inline.new_chart_inline(shape_id, rId, x, y, cx, cy), chart

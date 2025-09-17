@@ -62,6 +62,7 @@ class CT_GraphicalObjectData(BaseOxmlElement):
     """``<a:graphicData>`` element, container for the XML of a DrawingML object."""
 
     pic: CT_Picture = ZeroOrOne("pic:pic")  # pyright: ignore[reportAssignmentType]
+    cChart = ZeroOrOne("c:chart")
     uri: str = RequiredAttribute("uri", XsdToken)  # pyright: ignore[reportAssignmentType]
 
 
@@ -115,6 +116,35 @@ class CT_Inline(BaseOxmlElement):
             '    <a:graphicData uri="URI not set"/>\n'
             "  </a:graphic>\n"
             "</wp:inline>" % nsdecls("wp", "a", "pic", "r")
+        )
+
+    @classmethod
+    def new_chart_inline(cls, shape_id, rId, x, y, cx, cy):
+        """
+        创建一个新的图表内联对象。
+        """
+        inline = parse_xml(cls._chart_xml())  # 解析内联XML模板
+        inline.extent.cx = cx  # 设置宽度
+        inline.extent.cy = cy  # 设置高度
+        chart = CT_Chart.new(rId)  # 创建图表元素
+        inline.graphic.graphicData._insert_cChart(chart) # 将图表元素插入图形数据
+        return inline
+
+    @classmethod
+    def _chart_xml(cls):
+        """
+        返回图表内联元素的XML字符串模板。
+        """
+        return (
+                "<wp:inline %s>\n"
+                "  <wp:extent cx='0' cy='0'/>\n"
+                '  <wp:effectExtent l="0" t="0" r="0" b="0"/>\n'
+                '  <wp:docPr id="1" name="Chart 1"/>\n'
+                "  <wp:cNvGraphicFramePr/>\n"
+                "  <a:graphic %s>\n"
+                '    <a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/chart"/>\n'
+                "  </a:graphic>\n"
+                "</wp:inline>" % (nsdecls("wp", "a"), nsdecls("a"))
         )
 
 
@@ -297,3 +327,21 @@ class CT_Transform2D(BaseOxmlElement):
     def cy(self, value):
         ext = self.get_or_add_ext()
         ext.cy = value
+
+# 定义CT_Chart类以处理图表元素
+class CT_Chart(BaseOxmlElement):
+    @classmethod
+    def new(cls, rId):
+        """
+        创建一个新的图表元素，关联给定的关系ID。
+        """
+        chart = parse_xml(cls._chart_xml(rId))  # 解析图表XML模板
+        chart.id = rId  # 设置关系ID
+        return chart
+
+    @classmethod
+    def _chart_xml(cls, rId):
+        """
+        返回图表元素的XML字符串模板。
+        """
+        return '<c:chart %s r:id="%s"/>\n' % (nsdecls("c", "r"), rId)

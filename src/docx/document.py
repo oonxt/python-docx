@@ -245,6 +245,20 @@ class Document(ElementProxy):
             self.__body = _Body(self._element.body, self)
         return self.__body
 
+    def add_chart_document(self, chart_type, x, y, cx, cy, chart_data):
+        """
+        在文档中添加一个新的图表。
+        :param chart_type: 图表类型，来自pptx.enum.chart.XL_CHART_TYPE
+        :param x: 图表左上角X坐标
+        :param y: 图表左上角Y坐标
+        :param cx: 图表宽度
+        :param cy: 图表高度
+        :param chart_data: 图表数据，ChartData实例
+        :return: 创建的图表对象
+        """
+        run = self.add_paragraph().add_run()
+        return run.add_chart(chart_type, x, y, cx, cy, chart_data)
+
 
 class _Body(BlockItemContainer):
     """Proxy for `<w:body>` element in this document.
