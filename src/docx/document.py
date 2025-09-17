@@ -245,7 +245,7 @@ class Document(ElementProxy):
             self.__body = _Body(self._element.body, self)
         return self.__body
 
-    def add_chart_document(self, chart_type, x, y, cx, cy, chart_data):
+    def add_chart(self, chart_type, x, y, cx, cy, chart_data):
         """
         在文档中添加一个新的图表。
         :param chart_type: 图表类型，来自pptx.enum.chart.XL_CHART_TYPE
